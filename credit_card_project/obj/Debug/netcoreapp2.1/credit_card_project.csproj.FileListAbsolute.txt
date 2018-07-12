@@ -1,0 +1,14 @@
+D:\Project\credit_card_project\bin\Debug\netcoreapp2.1\credit_card_project.deps.json
+D:\Project\credit_card_project\bin\Debug\netcoreapp2.1\credit_card_project.runtimeconfig.json
+D:\Project\credit_card_project\bin\Debug\netcoreapp2.1\credit_card_project.runtimeconfig.dev.json
+D:\Project\credit_card_project\bin\Debug\netcoreapp2.1\credit_card_project.dll
+D:\Project\credit_card_project\bin\Debug\netcoreapp2.1\credit_card_project.pdb
+D:\Project\credit_card_project\obj\Debug\netcoreapp2.1\credit_card_project.csprojAssemblyReference.cache
+D:\Project\credit_card_project\obj\Debug\netcoreapp2.1\credit_card_project.csproj.CoreCompileInputs.cache
+D:\Project\credit_card_project\obj\Debug\netcoreapp2.1\credit_card_project.RazorAssemblyInfo.cache
+D:\Project\credit_card_project\obj\Debug\netcoreapp2.1\credit_card_project.RazorAssemblyInfo.cs
+D:\Project\credit_card_project\obj\Debug\netcoreapp2.1\credit_card_project.AssemblyInfoInputs.cache
+D:\Project\credit_card_project\obj\Debug\netcoreapp2.1\credit_card_project.AssemblyInfo.cs
+D:\Project\credit_card_project\obj\Debug\netcoreapp2.1\credit_card_project.RazorTargetAssemblyInfo.cache
+D:\Project\credit_card_project\obj\Debug\netcoreapp2.1\credit_card_project.dll
+D:\Project\credit_card_project\obj\Debug\netcoreapp2.1\credit_card_project.pdb
