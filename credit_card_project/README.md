@@ -17,7 +17,7 @@ Path: SQL_Script/2_Mockup_Data_CREDIT_CARD.sql
 Path: SQL_Script/3_SP_CHECK_CREDIT_CARD
 
 4. Modify connection string\
-4.1 Path: RestAPI/credit_card_project/appsettings.json
+4.1 Path: RestAPI/credit_card_project/appsettings.json\
 4.2 Path: RestAPI/credit_card_project/Models/CreditCardContext.cs
 
 ## Run API
