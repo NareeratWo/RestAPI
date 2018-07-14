@@ -4,44 +4,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using credit_card_project.Models;
 using System;
+using System.Data.SqlClient;
 
 namespace credit_card_project.Controllers {
   [Route ("api/[controller]")]
   [ApiController]
 
   public class CreditCardController : ControllerBase {
-    private readonly CreditCardContext _context;
+    private CreditCardContext _context;
 
     // Constructor
     public CreditCardController (CreditCardContext context) {
       _context = context;
 
-      if (_context.CreditCardItems.Count () == 0) {
-        _context.CreditCardItems.Add (new CreditCardItem { expiryDate = "Item 1" });
-        _context.SaveChanges ();
-      }
     }
 
     // GET All CreditCard from in-memory database
     [HttpGet]
     public ActionResult<List<CreditCardItem>> GetAll () {
-      return _context.CreditCardItems.ToList ();
-    }
-
-    // GET CreditCard by id
-    [HttpGet ("{id}", Name = "GetCreditCard")]
-    public ActionResult<CreditCardItem> GetById (long id) {
-
-      var item = _context.CreditCardItems.Find (id);
-      if (item == null) {
-        return NotFound ();
-      }
-      return item;
+      return _context.CreditCardItem.ToList ();
     }
 
     // POST
     [HttpPost]
-    public string Create (CreditCardItem item) {
+    public string CheckCreditCard (CreditCardItem item) {
 		var result = Validate(item);
 		if (result.validateresult){
 			var result2 = ValidateRule(item);
@@ -57,17 +43,17 @@ namespace credit_card_project.Controllers {
 			//.FromSql("EXECUTE dbo.SP_CHECK_CREDIT_CARD {0} {1} {2}",item.cardNo,item.expiryDate,item.cardType  )
 			//.ToList();
 			//return CreatedAtRoute ("GetCreditCard", new CreditCardItem { Id = item.Id }, item);
-			//return "Validate true";
+			return "Validate true";
 		}
       return result.errmsg;
       
     }
 
-	private (bool validateresult, string errmsg) Validate(CreditCardItem item){
+    private (bool validateresult, string errmsg) Validate(CreditCardItem item){
 		String errormsg="";
 		int CardNoLength=0;
 
-		CardNoLength=item.cardNo.ToString().Length;
+		CardNoLength=item.CARD_NO.ToString().Length;
 
 		//validate length 15 or 16 digit
 		if (CardNoLength != 15 && CardNoLength  != 16){
@@ -75,7 +61,7 @@ namespace credit_card_project.Controllers {
 			return (false,errormsg);
 		}
 		//validate expiry date  format
-		if (item.expiryDate.ToString().Length != 6 ){
+		if (item.EXPIRE_DATE.ToString().Length != 6 ){
 			errormsg="Invalid expiry date";
 			return (false,errormsg);			
 		}
@@ -90,8 +76,8 @@ namespace credit_card_project.Controllers {
 		int firstDigitCardNo=0;
 		bool result=false;
 
-		CardNoLength=item.cardNo.ToString().Length;
-		firstDigitCardNo=Int32.Parse(item.cardNo.ToString().Substring(0,1));
+		CardNoLength=item.CARD_NO.ToString().Length;
+		firstDigitCardNo=Int32.Parse(item.CARD_NO.ToString().Substring(0,1));
 
 		//get card type
 		if (CardNoLength == 15 && firstDigitCardNo == 3){
@@ -103,7 +89,7 @@ namespace credit_card_project.Controllers {
 			}
 			if( firstDigitCardNo == 4){
 				cardType="Visa";
-				result = ValidateVisa(item.cardNo);
+				result = ValidateVisa(Convert.ToInt64(item.CARD_NO));
 			}
 			if( firstDigitCardNo == 5){
 				cardType="Master";
@@ -128,5 +114,6 @@ namespace credit_card_project.Controllers {
 		}
 		return false;	
 	}
+
   }
 }

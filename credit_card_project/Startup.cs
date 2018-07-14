@@ -25,8 +25,8 @@ namespace credit_card_project
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices (IServiceCollection services) {
             services.AddDbContext<CreditCardContext> (options =>
-				//options.UseSqlServer(Configuration.GetConnectionString("CreditCardContext")));
-                options.UseInMemoryDatabase ("CreditCardList"));
+				options.UseSqlServer(Configuration.GetConnectionString("CreditCardConnection")));
+                //options.UseInMemoryDatabase ("CreditCardList"));
             services.AddMvc ()
                 .SetCompatibilityVersion (CompatibilityVersion.Version_2_1);
         }

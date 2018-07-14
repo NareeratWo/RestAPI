@@ -13,7 +13,7 @@ namespace credit_card_project.Models
         {
         }       
 
-        public DbSet<CreditCardItem> CreditCardItems { get; set; }
+        public DbSet<CreditCardItem> CreditCardItem { get; set; }
 
 
     }
