@@ -1,4 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
+
 
 namespace credit_card_project.Models
 {
@@ -7,8 +11,10 @@ namespace credit_card_project.Models
         public CreditCardContext(DbContextOptions<CreditCardContext> options)
             : base(options)
         {
-        }
+        }       
 
         public DbSet<CreditCardItem> CreditCardItems { get; set; }
+
+
     }
 }
