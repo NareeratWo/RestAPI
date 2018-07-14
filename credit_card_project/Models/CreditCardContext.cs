@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Data.SqlClient;
+using System.Data;
 
 
 namespace credit_card_project.Models
@@ -16,10 +17,14 @@ namespace credit_card_project.Models
 
         public DbSet<CreditCardItem> CreditCardItem { get; set; }
 
-        public bool checkCreditCardOnDB(){
+        public bool checkCreditCardOnDB(CreditCardItem item){
             var connectionString = "Server=tcp:localhost,1433; Initial Catalog=CreditCard;User Id=sa;Password=P@ssw0rd;";
 			using (SqlConnection connection = new SqlConnection (connectionString)) {
-			var command = new SqlCommand("SELECT TOP 100 CARD_NO, EXPIRE_DATE, CARD_TYPE FROM dbo.CreditCardItem;", connection);
+			    var command = new SqlCommand("dbo.SP_CHECK_CREDIT_CARD", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add("@Card_NO", SqlDbType.VarChar).Value = item.CARD_NO;
+                command.Parameters.Add("@expire_date", SqlDbType.VarChar).Value = item.EXPIRE_DATE;
+                command.Parameters.Add("@card_type", SqlDbType.VarChar).Value = item.CARD_TYPE;
 				connection.Open();
 				using (var reader = command.ExecuteReader())
 				{

@@ -30,6 +30,13 @@ namespace credit_card_project.Controllers {
     public string CheckCreditCard (CreditCardItem item) {
 		var result = Validate(item);
         bool checkDBresult=true;
+
+        checkDBresult = _context.checkCreditCardOnDB(item);
+            if (!checkDBresult){
+                return "Does not exist";
+            }else{
+                return "found Data";
+            }             
         
               
 		if (result.validateresult){
@@ -40,10 +47,7 @@ namespace credit_card_project.Controllers {
 			else{
 				return "Invalid "+result2.cardType;
 			}
-			checkDBresult = _context.checkCreditCardOnDB();
-            if (!checkDBresult){
-                    return "Does not exist";
-            }
+
 		}
       return result.errmsg;
       
