@@ -19,7 +19,7 @@ namespace credit_card_project.Controllers {
 
     }
 
-    // GET All CreditCard from in-memory database
+    // GET All CreditCard
     [HttpGet]
     public ActionResult<List<CreditCardItem>> GetAll () {
       return _context.CreditCardItem.ToList ();
@@ -29,6 +29,9 @@ namespace credit_card_project.Controllers {
     [HttpPost]
     public string CheckCreditCard (CreditCardItem item) {
 		var result = Validate(item);
+        bool checkDBresult=true;
+        
+              
 		if (result.validateresult){
 			var result2 = ValidateRule(item);
 			if (result2.isValid){
@@ -37,13 +40,10 @@ namespace credit_card_project.Controllers {
 			else{
 				return "Invalid "+result2.cardType;
 			}
-			//_context.CreditCardItems.Add (item);
-			//_context.SaveChanges ();
-			//var list= _context.CreditCardItems
-			//.FromSql("EXECUTE dbo.SP_CHECK_CREDIT_CARD {0} {1} {2}",item.cardNo,item.expiryDate,item.cardType  )
-			//.ToList();
-			//return CreatedAtRoute ("GetCreditCard", new CreditCardItem { Id = item.Id }, item);
-			return "Validate true";
+			checkDBresult = _context.checkCreditCardOnDB();
+            if (!checkDBresult){
+                    return "Does not exist";
+            }
 		}
       return result.errmsg;
       
