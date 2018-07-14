@@ -30,35 +30,38 @@ namespace credit_card_project.Controllers {
     public string CheckCreditCard (CreditCardItem item) {
 		var result = Validate(item);
         bool checkDBresult=true;
-
-        checkDBresult = _context.checkCreditCardOnDB(item);
-            if (!checkDBresult){
-                return "Does not exist";
-            }else{
-                return "found Data";
-            }             
-        
-              
+       
 		if (result.validateresult){
-			var result2 = ValidateRule(item);
-			if (result2.isValid){
-				return "Valid "+result2.cardType;
+			var ValidateRuleResult = ValidateRule(item);
+			if (!ValidateRuleResult.isValid){
+				return "Invalid "+ValidateRuleResult.cardType;
 			}
-			else{
-				return "Invalid "+result2.cardType;
-			}
-
+              
+            //validate is true
+            //set card_type to item
+            if (ValidateRuleResult.cardType != "Unknown") {
+                item.CARD_TYPE = ValidateRuleResult.cardType;
+                //check data at DB
+                checkDBresult = _context.checkCreditCardOnDB(item);
+                if (!checkDBresult){
+                    return "Does not exist "+ValidateRuleResult.cardType;
+                }else{
+                    return "Valid "+ValidateRuleResult.cardType;
+                } 
+            }
 		}
-      return result.errmsg;
-      
+      return result.errmsg;      
     }
 
     private (bool validateresult, string errmsg) Validate(CreditCardItem item){
 		String errormsg="";
 		int CardNoLength=0;
+        int expiryYear;
+        int expiryMonth;
 
 		CardNoLength=item.CARD_NO.ToString().Length;
-
+        expiryMonth=Int32.Parse(item.EXPIRE_DATE.ToString().Substring(0,2));
+        expiryYear=Int32.Parse(item.EXPIRE_DATE.ToString().Substring(2,4));
 		//validate length 15 or 16 digit
 		if (CardNoLength != 15 && CardNoLength  != 16){
 			errormsg="Invalid credit card no";
@@ -69,55 +72,77 @@ namespace credit_card_project.Controllers {
 			errormsg="Invalid expiry date";
 			return (false,errormsg);			
 		}
-		DateTime now = DateTime.Now;
-		return (true,"");
+        DateTime now = DateTime.Now;
+        //check expiry month is valid
+        if( expiryYear < now.Year ){
+            errormsg="Invalid expiry date";
+			return (false,errormsg);
+        }
+
+        //check expiry month is valid
+        if(expiryMonth < 0 || expiryMonth> 12 ){
+            errormsg="Invalid expiry date";
+			return (false,errormsg);
+        }
+        
 		
+		return (true,"");	
 	}	
+    
+    private bool ValidateVisa(int expiryYear){
+		if (expiryYear % 4 == 0){
+			return true;
+		}
+		return false;	
+	}
+
+    private bool ValidateMasterCard(int expiryYear){
+        int i;
+            for (i = 2; i <= expiryYear - 1; i++){
+                if (expiryYear % i == 0){
+                    return false;
+                }
+            }
+            if (i == expiryYear){
+                return true;
+            }
+            return false;
+	}
 
 	private (bool isValid, string cardType) ValidateRule(CreditCardItem item){
 		String cardType="";
 		int CardNoLength=0;
 		int firstDigitCardNo=0;
 		bool result=false;
+        int expiryYear;
 
 		CardNoLength=item.CARD_NO.ToString().Length;
 		firstDigitCardNo=Int32.Parse(item.CARD_NO.ToString().Substring(0,1));
+        expiryYear = Int32.Parse(item.EXPIRE_DATE.ToString().Substring(2,4));
 
 		//get card type
 		if (CardNoLength == 15 && firstDigitCardNo == 3){
 			cardType="Amex";
+            result = true;
 		}
 		if (CardNoLength == 16){
 			if( firstDigitCardNo == 3){
 				cardType="JCB";
+                result = true;
 			}
 			if( firstDigitCardNo == 4){
 				cardType="Visa";
-				result = ValidateVisa(Convert.ToInt64(item.CARD_NO));
+				result = ValidateVisa(expiryYear);
 			}
 			if( firstDigitCardNo == 5){
-				cardType="Master";
+				cardType="MasterCard";
+                result = ValidateMasterCard(expiryYear);
 			}
-			else{
-				cardType="Unknown";
+			if( firstDigitCardNo != 3 && firstDigitCardNo != 4 && firstDigitCardNo != 5){
+				cardType="UnKnown";
 			}
 		}
 		return (result,cardType);
 	}
-
-	private bool ValidateVisa(long cardNo){
-		if (cardNo % 400 == 0){
-			return true;
-		}
-		return false;	
-	}
-
-	private bool ValidateMaster(long cardNo){
-		if (cardNo % 400 == 0){
-			return true;
-		}
-		return false;	
-	}
-
   }
 }
