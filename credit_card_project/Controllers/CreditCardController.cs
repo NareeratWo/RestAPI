@@ -27,14 +27,16 @@ namespace credit_card_project.Controllers {
 
     // POST
     [HttpPost]
-    public string CheckCreditCard (CreditCardItem item) {
+    public IActionResult CheckCreditCard (CreditCardItem item) {
+
 		var result = Validate(item);
         bool checkDBresult=true;
+        string returnResult="";
        
 		if (result.validateresult){
 			var ValidateRuleResult = ValidateRule(item);
 			if (!ValidateRuleResult.isValid){
-				return "Invalid "+ValidateRuleResult.cardType;
+				returnResult = "Invalid";
 			}
               
             //validate is true
@@ -44,13 +46,17 @@ namespace credit_card_project.Controllers {
                 //check data at DB
                 checkDBresult = _context.checkCreditCardOnDB(item);
                 if (!checkDBresult){
-                    return "Does not exist "+ValidateRuleResult.cardType;
+                    returnResult = "Does not exist";
+                    
                 }else{
-                    return "Valid "+ValidateRuleResult.cardType;
+                    returnResult =  "Valid";
                 } 
             }
 		}
-      return result.errmsg;      
+        else{
+             return BadRequest(returnResult);    
+        }
+         return Ok(new { result = returnResult, cardType = item.CARD_TYPE }); 
     }
 
     private (bool validateresult, string errmsg) Validate(CreditCardItem item){
